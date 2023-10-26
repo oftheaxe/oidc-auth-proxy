@@ -1,0 +1,44 @@
+---
+version: '3.5'
+services:
+  postgres:
+    image: library/postgres:12.0
+    container_name: postgres
+    hostname: postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: "keycloak"
+      POSTGRES_USER: "keycloak"
+      POSTGRES_PASSWORD: "password"
+    networks:
+      - proxy
+
+  keycloak:
+    image: keycloak-22.0.0
+    container_name: keycloak
+    hostname: keycloak
+    restart: always
+    environment:
+      KC_DB_URL: jdbc:postgresql://postgres/keycloak
+      KC_DB_USERNAME: "keycloak"
+      KC_DB_PASSWORD: "password"
+      KEYCLOAK_ADMIN: "admin"
+      KEYCLOAK_ADMIN_PASSWORD: "secret"
+    ports:
+      - 8080:8080
+      - 8443:8443
+    networks:
+      - proxy
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    driver: local
+    name: postgres_data
+networks:
+  proxy:
+    internal: false
+    name: proxy

@@ -1,0 +1,8 @@
+xpack.encryptedSavedObjects.encryptionKey: "<xpack__encryptedsavedobjects__encryptionkey>"
+xpack.reporting.encryptionKey: "<xpack__reporting__encryptionkey>"
+xpack.security.encryptionKey: "<xpack__security__encryptionkey>"
+
+server.host: "0.0.0.0"
+server.shutdownTimeout: "5s"
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+monitoring.ui.container.elasticsearch.enabled: true
