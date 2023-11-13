@@ -11,7 +11,7 @@ local opts = {
     client_id = ngx.var.client_id,
     client_secret = ngx.var.client_secret,
     redirect_uri_scheme = ngx.var.redirect_uri_scheme,
-    logout_path = "/logout",
+    logout_path = "/api/security/logout",
     redirect_after_logout_uri = ngx.var.redirect_after_logout_uri,
     redirect_after_logout_with_id_token_hint = false,
     accept_none_alg = false,
@@ -47,6 +47,7 @@ end
 local function save_session(username, roles)
   s.data.user_exists = true
   s:save()
+  ngx.log(ngx.INFO, "Session saved")
 end
 
 local function ensure_user_exists(username, default_password, roles)
@@ -115,8 +116,7 @@ local function get_roles_from_groups(groups)
   return table.concat(roles, ', ')
 end
 
-local function main()
-
+local function login()
   -- Call introspect for OAuth 2.0 Bearer Access Token validation
   local res, err = require("resty.openidc").authenticate(opts)
 
@@ -126,8 +126,6 @@ local function main()
     ngx.log(ngx.ERR, "Error while processing ", err)
     ngx.exit(ngx.HTTP_FORBIDDEN)
   end
-
-  ngx.log(ngx.INFO, "OIDC login succeeded")
 
   -- If user is allowed to login, rewrite header to authenticate, otherwise forbid access
   if login_allowed(res.id_token.groups) then
@@ -156,6 +154,10 @@ local function main()
     ngx.exit(ngx.HTTP_FORBIDDEN)
   end
 
+end
+
+local function main()
+  login()
 end
 
 main()
